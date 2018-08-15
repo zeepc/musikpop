@@ -1,9 +1,25 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const SpotifyStrategy = require('passport-spotify').Strategy;
 
 // console.log('hello world');
 
 const app = express();
+
+passport.use(
+  new SpotifyStrategy(
+    {
+      clientID: client_id,
+      clientSecret: client_secret,
+      callbackURL: 'http://localhost:8888/auth/spotify/callback'
+    },
+    function(accessToken, refreshToken, expires_in, profile, done) {
+      User.findOrCreate({ spotifyId: profile.id }, function(err, user) {
+        return done(err, user);
+      });
+    }
+  )
+);
 
 // main page
 
@@ -13,7 +29,7 @@ app.get('/', (req, res) => {
 })
 
 // member log-in
-app.get('/signin', (req,res)=>{
+app.post('/signin', (req,res)=>{
 	res.send('i am in signin');
 })
 
