@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const app = express();
 
+// API call and callback URL for user authentication with Spotify
 passport.use(
   new SpotifyStrategy(
     {
@@ -23,7 +24,7 @@ passport.use(
   )
 );
 
-
+//Authenticate user with their account
 app.get('/auth/spotify', passport.authenticate('spotify'), function(req, res) {
   // The request will be redirected to spotify for authentication, so this
   // function will not be called.
@@ -37,6 +38,7 @@ app.get(
     res.redirect('/');
   }
 );
+
 
 
 // main page
