@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const SpotifyStrategy = require('passport-spotify').Strategy;
-
+require('dotenv').config();
 
 
 
@@ -13,7 +13,7 @@ passport.use(
     {
       clientID: process.env.SPOTIFY_ID,
       clientSecret: process.env.SPOTIFY_SECRET,
-      callbackURL: 'http://localhost:8888/auth/spotify/callback'
+      callbackURL: 'http://localhost:3000/callback'
     },
     function(accessToken, refreshToken, expires_in, profile, done) {
       User.findOrCreate({ spotifyId: profile.id }, function(err, user) {
@@ -24,6 +24,21 @@ passport.use(
 );
 
 
+app.get('/auth/spotify', passport.authenticate('spotify'), function(req, res) {
+  // The request will be redirected to spotify for authentication, so this
+  // function will not be called.
+});
+
+app.get(
+  '/auth/spotify/callback',
+  passport.authenticate('spotify', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  }
+);
+
+
 // main page
 
 app.get('/', (req, res) => {
@@ -31,15 +46,6 @@ app.get('/', (req, res) => {
 
 })
 
-// member log-in
-app.post('/signin', (req,res) => {
-	res.send('i am in signin');
-})
-
-//new member sign-up
-app.get('/signup', (req, res) => {
-	res.send('i am in signup with spotify');
-})
 
 //member profile
 app.get('/profile/:id', (req,res) => {
